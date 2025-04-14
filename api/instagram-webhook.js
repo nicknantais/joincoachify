@@ -7,14 +7,16 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const { 'hub.mode': mode, 'hub.verify_token': token, 'hub.challenge': challenge } = req.query || {};
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
 
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       console.log("✅ Webhook verified successfully.");
       return res.status(200).send(challenge);
     } else {
       console.warn("❌ Webhook verification failed.");
-      return res.sendStatus(403);
+      return res.status(403).send('Forbidden');
     }
   }
 
@@ -29,5 +31,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(405).end(); // Method Not Allowed
+  return res.status(405).send('Method Not Allowed');
 }
